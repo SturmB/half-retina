@@ -1,6 +1,6 @@
 {
   "name": "half-retina",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Create @1.5x images from @3x images",
   "main": "index.js",
   "scripts": {
