@@ -18,9 +18,17 @@
         bOK.enabled = !!tInput.text;
     };
     bBrowse.onClick = function () {
-        tInput.text;
+        var selectedFolder = Folder.selectDialog("Choose a Folder");
+        tInput.text = selectedFolder.fsName;
     };
     if (wInput.show() === 1) {
-        $.writeln("Test");
+        var searchFolder = new Folder(tInput.text);
+        if (searchFolder.exists) {
+            beginWork(searchFolder);
+            return;
+        }
+        else {
+            alert(searchFolder.fsName + " does not exist. Please try again.");
+        }
     }
 })();

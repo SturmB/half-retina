@@ -25,22 +25,24 @@
   const bCancel: Button = gButtons.add(`button`, undefined, `Cancel`);
 
   bOK.enabled = false;
-  tInput.onChanging = () => {
+  tInput.onChanging = (): void => {
     bOK.enabled = !!tInput.text;
   };
 
   // Define the behavior of the "Browse" button
-  bBrowse.onClick = () => {
-    tInput.text;
+  bBrowse.onClick = (): void => {
+    const selectedFolder: Folder = Folder.selectDialog(`Choose a Folder`);
+    tInput.text = selectedFolder.fsName;
   };
 
   if (wInput.show() === 1) {
-    // const find: string = tInput.text;
-    // const replaceWith: string = tOutput.text;
-
-    // const rootLayers: Layers = workDoc.layers;
-
-    // renameLayer(rootLayers, find, replaceWith);
-    $.writeln("Test");
+    const searchFolder: Folder = new Folder(tInput.text);
+    // Check to make sure the directory exists.
+    if (searchFolder.exists) {
+      beginWork(searchFolder);
+      return;
+    } else {
+      alert(`${searchFolder.fsName} does not exist. Please try again.`);
+    }
   }
 })();
