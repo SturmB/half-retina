@@ -37,7 +37,7 @@ const beginWork = (startingFolder: Folder): void => {
   const gInput: Group = wInput.add(`group`);
   gInput.add(`statictext`, undefined, `Directory:`);
   const tInput: EditText = gInput.add(`edittext`);
-  const bBrowse: Button = gInput.add(`button`);
+  const bBrowse: Button = gInput.add(`button`, undefined, `Browse…`);
   tInput.characters = 20;
   tInput.active = true;
 
@@ -47,16 +47,23 @@ const beginWork = (startingFolder: Folder): void => {
   const bCancel: Button = gButtons.add(`button`, undefined, `Cancel`);
 
   bOK.enabled = false;
-  tInput.onChanging = (): void => {
+
+  // Define when the "OK" button becomes enabled.
+  const enbaleOK = (): void => {
     bOK.enabled = !!tInput.text;
   };
+
+  tInput.onChanging = enbaleOK;
+  tInput.onChange = enbaleOK;
 
   // Define the behavior of the "Browse" button
   bBrowse.onClick = (): void => {
     const selectedFolder: Folder = Folder.selectDialog(`Choose a Folder`);
     tInput.text = selectedFolder.fsName;
+    enbaleOK();
   };
 
+  // When the user presses the "OK" button
   if (wInput.show() === 1) {
     const searchFolder: Folder = new Folder(tInput.text);
     // Check to make sure the directory exists.
