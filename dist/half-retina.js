@@ -1,4 +1,25 @@
 "use strict";
+var getImages = function (startFolder, files) {
+    var reRetina3 = new RegExp("@3x.(jp|pn)g", "i");
+    files = files || [];
+    var currentFiles = startFolder.getFiles("*");
+    for (var _i = 0, currentFiles_1 = currentFiles; _i < currentFiles_1.length; _i++) {
+        var currentFile = currentFiles_1[_i];
+        if (currentFile instanceof Folder) {
+            getImages(currentFile, files);
+        }
+        else {
+            if (reRetina3.test(currentFile.name)) {
+                files.push(currentFile);
+            }
+        }
+    }
+    return files;
+};
+var beginWork = function (startingFolder) {
+    var imageFiles = getImages(startingFolder);
+    $.writeln(imageFiles.toString());
+};
 (function () {
     var wInput = new Window("dialog", "Half-Retina");
     wInput.alignChildren = "right";
@@ -28,7 +49,7 @@
             return;
         }
         else {
-            alert(searchFolder.fsName + " does not exist. Please try again.");
+            alert("\"" + searchFolder.fsName + "\" does not exist. Please try again.");
         }
     }
 })();

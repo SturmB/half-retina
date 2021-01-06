@@ -1,5 +1,27 @@
 /// <reference types="types-for-adobe/Photoshop/2015.5"/>
 
+const getImages = (startFolder: Folder, files?: File[]): File[] => {
+  const reRetina3: RegExp = new RegExp(`@3x.(jp|pn)g`, `i`);
+  files = files || [];
+  const currentFiles: Array<File | Folder> = startFolder.getFiles("*");
+  for (const currentFile of currentFiles) {
+    if (currentFile instanceof Folder) {
+      getImages(currentFile, files);
+    } else {
+      if (reRetina3.test(currentFile.name)) {
+        files.push(currentFile);
+      }
+    }
+  }
+  return files;
+};
+
+const beginWork = (startingFolder: Folder): void => {
+  // Get the list of all "@3x" images
+  const imageFiles: File[] = getImages(startingFolder);
+  $.writeln(imageFiles.toString());
+};
+
 (() => {
   // Build ScriptUI window
   const wInput: Window = new Window(`dialog`, `Half-Retina`);
@@ -42,7 +64,7 @@
       beginWork(searchFolder);
       return;
     } else {
-      alert(`${searchFolder.fsName} does not exist. Please try again.`);
+      alert(`"${searchFolder.fsName}" does not exist. Please try again.`);
     }
   }
 })();
