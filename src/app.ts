@@ -1,0 +1,6 @@
+/// <reference types="types-for-adobe/Photoshop/2015.5"/>
+
+(() => {
+  const message: string = `Hello World`;
+  $.writeln(message);
+})();
