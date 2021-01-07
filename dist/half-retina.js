@@ -10,6 +10,7 @@ var createHalfRetina = function (imageFile) {
     workDoc.resizeImage(workDoc.width.value / 2, workDoc.height.value / 2, workDoc.resolution, ResampleMethod.AUTOMATIC, 0);
     workDoc.saveAs(saveFile, saveOptions);
     workDoc.close(SaveOptions.DONOTSAVECHANGES);
+    imageFile.remove();
     return;
 };
 var progressWin = function (endValue) {

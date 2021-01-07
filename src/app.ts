@@ -28,7 +28,7 @@ const createHalfRetina = (imageFile: File): void => {
   workDoc.saveAs(saveFile, saveOptions);
   workDoc.close(SaveOptions.DONOTSAVECHANGES);
 
-  // imageFile.remove();
+  imageFile.remove();
 
   return;
 };
