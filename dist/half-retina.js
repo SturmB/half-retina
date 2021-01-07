@@ -16,13 +16,20 @@ var processImage = function (imageFile) {
 var progressWin = function (endValue) {
     endValue = endValue || 100;
     var win = new Window("palette", "Progress");
-    win.pbar = win.add("progressbar", undefined, 0, endValue);
-    win.pbar.preferredSize[0] = 300;
+    win.alignChildren = "left";
+    var barGroup = win.add("group");
+    barGroup.orientation = "stack";
+    barGroup.alignChildren = "center";
+    win.percent = barGroup.add("statictext", undefined, "0%");
+    win.percent.characters = 5;
+    win.percent.justify = "center";
+    win.pbar = barGroup.add("progressbar", undefined, 0, endValue);
+    win.pbar.preferredSize = [300, 25];
     var timeRemainGroup = win.add("group");
     timeRemainGroup.orientation = "row";
     timeRemainGroup.add("statictext", undefined, "Time remaining:");
     win.timeRemain = timeRemainGroup.add("statictext");
-    win.timeRemain.preferredSize[0] = 300;
+    win.timeRemain.preferredSize[0] = 200;
     return win;
 };
 var getImages = function (startFolder, files) {
@@ -105,6 +112,9 @@ var beginWork = function (startingFolder) {
         var image = imageFiles[index];
         if (progressWindow.pbar) {
             progressWindow.pbar.value = index + 1;
+        }
+        if (progressWindow.percent) {
+            progressWindow.percent.text = Math.round(((index + 1) / imageFiles.length) * 100) + "%";
         }
         processImage(image);
         var timeRemaining = calculateTimeRemaining(startTime, index + 1, imageFiles.length);

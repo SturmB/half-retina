@@ -7,6 +7,7 @@
 interface ProgressWindow extends Window {
   pbar?: Progressbar,
   timeRemain?: StaticText,
+  percent?: StaticText,
 }
 
 /**
@@ -53,13 +54,23 @@ const processImage = (imageFile: File): void => {
 const progressWin = (endValue?: number): ProgressWindow => {
   endValue = endValue || 100;
   const win: ProgressWindow = new Window(`palette`, `Progress`);
-  win.pbar = win.add(`progressbar`, undefined, 0, endValue);
-  win.pbar.preferredSize[0] = 300;
+  win.alignChildren = `left`;
+
+  const barGroup: Group = win.add(`group`);
+  barGroup.orientation = `stack`;
+  barGroup.alignChildren = `center`;
+  win.percent = barGroup.add(`statictext`, undefined, `0%`);
+  win.percent.characters = 5;
+  win.percent.justify = `center`;
+  win.pbar = barGroup.add(`progressbar`, undefined, 0, endValue);
+  win.pbar.preferredSize = [300, 25];
+
   const timeRemainGroup: Group = win.add(`group`);
   timeRemainGroup.orientation = `row`;
   timeRemainGroup.add(`statictext`, undefined, `Time remaining:`);
   win.timeRemain = timeRemainGroup.add(`statictext`);
-  win.timeRemain.preferredSize[0] = 300;
+  win.timeRemain.preferredSize[0] = 200;
+
   return win;
 };
 
@@ -205,6 +216,9 @@ const beginWork = (startingFolder: Folder): void => {
     const image = imageFiles[index];
     if (progressWindow.pbar) {
       progressWindow.pbar.value = index + 1;
+    }
+    if (progressWindow.percent) {
+      progressWindow.percent.text = `${Math.round(((index + 1) / imageFiles.length) * 100)}%`
     }
     processImage(image);
     const timeRemaining: number = calculateTimeRemaining(startTime, index + 1, imageFiles.length);
