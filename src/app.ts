@@ -4,6 +4,17 @@ interface ProgressWindow extends Window {
   pbar?: Progressbar,
 }
 
+const createHalfRetina = (imageFile: File): void => {
+  const saveFile: File = new File(imageFile.fsName.replace(`@3x`, `@1.5x`));
+  $.writeln(`Save file is ${saveFile.fsName}`);
+
+  const workDoc: Document = app.open(imageFile);
+  $.writeln(`workDoc is ${workDoc.name}`);
+  workDoc.close(SaveOptions.DONOTSAVECHANGES);
+
+  return;
+};
+
 const progressWin = (endValue?: number): ProgressWindow => {
   endValue = endValue || 100;
   const win: ProgressWindow = new Window(`palette`);
@@ -34,10 +45,12 @@ const beginWork = (startingFolder: Folder): void => {
   progressWindow.show();
   for (let index = 0; index < imageFiles.length; index++) {
     const image = imageFiles[index];
-    $.writeln(image.fsName);
+    $.writeln(`Image fsName is ${image.fsName}`);
     if (progressWindow.pbar) {
       progressWindow.pbar.value = index + 1;
     }
+    createHalfRetina(image);
+    return;
   }
 };
 

@@ -1,4 +1,12 @@
 "use strict";
+var createHalfRetina = function (imageFile) {
+    var saveFile = new File(imageFile.fsName.replace("@3x", "@1.5x"));
+    $.writeln("Save file is " + saveFile.fsName);
+    var workDoc = app.open(imageFile);
+    $.writeln("workDoc is " + workDoc.name);
+    workDoc.close(SaveOptions.DONOTSAVECHANGES);
+    return;
+};
 var progressWin = function (endValue) {
     endValue = endValue || 100;
     var win = new Window("palette");
@@ -28,8 +36,12 @@ var beginWork = function (startingFolder) {
     progressWindow.show();
     for (var index = 0; index < imageFiles.length; index++) {
         var image = imageFiles[index];
-        $.writeln(image.fsName);
-        progressWindow.pbar.value = index + 1;
+        $.writeln("Image fsName is " + image.fsName);
+        if (progressWindow.pbar) {
+            progressWindow.pbar.value = index + 1;
+        }
+        createHalfRetina(image);
+        return;
     }
 };
 (function () {
