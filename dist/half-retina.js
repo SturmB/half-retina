@@ -1,5 +1,5 @@
 "use strict";
-var createHalfRetina = function (imageFile) {
+var processImage = function (imageFile) {
     var saveFile = new File(imageFile.fsName.replace("@3x", "@1.5x"));
     var saveOptions = new JPEGSaveOptions();
     saveOptions.embedColorProfile = false;
@@ -46,7 +46,7 @@ var beginWork = function (startingFolder) {
         if (progressWindow.pbar) {
             progressWindow.pbar.value = index + 1;
         }
-        createHalfRetina(image);
+        processImage(image);
     }
     progressWindow.close();
     return;

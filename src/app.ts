@@ -4,7 +4,7 @@ interface ProgressWindow extends Window {
   pbar?: Progressbar;
 }
 
-const createHalfRetina = (imageFile: File): void => {
+const processImage = (imageFile: File): void => {
   const saveFile: File = new File(imageFile.fsName.replace(`@3x`, `@1.5x`));
 
   const saveOptions: JPEGSaveOptions = new JPEGSaveOptions();
@@ -67,7 +67,7 @@ const beginWork = (startingFolder: Folder): void => {
     if (progressWindow.pbar) {
       progressWindow.pbar.value = index + 1;
     }
-    createHalfRetina(image);
+    processImage(image);
   }
   progressWindow.close();
   return;
