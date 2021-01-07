@@ -35,7 +35,7 @@ const processImage = (imageFile: File): void => {
 
 const progressWin = (endValue?: number): ProgressWindow => {
   endValue = endValue || 100;
-  const win: ProgressWindow = new Window(`palette`);
+  const win: ProgressWindow = new Window(`palette`, `Progress`);
   win.pbar = win.add(`progressbar`, undefined, 0, endValue);
   win.pbar.preferredSize[0] = 300;
   return win;

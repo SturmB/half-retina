@@ -15,7 +15,7 @@ var processImage = function (imageFile) {
 };
 var progressWin = function (endValue) {
     endValue = endValue || 100;
-    var win = new Window("palette");
+    var win = new Window("palette", "Progress");
     win.pbar = win.add("progressbar", undefined, 0, endValue);
     win.pbar.preferredSize[0] = 300;
     return win;
