@@ -1,7 +1,7 @@
 /// <reference types="types-for-adobe/Photoshop/2015.5"/>
 
 interface ProgressWindow extends Window {
-  pbar?: Progressbar,
+  pbar?: Progressbar;
 }
 
 const createHalfRetina = (imageFile: File): void => {
@@ -9,8 +9,17 @@ const createHalfRetina = (imageFile: File): void => {
   $.writeln(`Save file is ${saveFile.fsName}`);
 
   const workDoc: Document = app.open(imageFile);
-  $.writeln(`workDoc is ${workDoc.name}`);
-  workDoc.close(SaveOptions.DONOTSAVECHANGES);
+
+  workDoc.resizeImage(
+    // @ts-ignore 'value' DOES exist
+    workDoc.width.value / 2,
+    // @ts-ignore 'value' DOES exist
+    workDoc.height.value / 2,
+    workDoc.resolution,
+    ResampleMethod.AUTOMATIC,
+    0 // Noise value should be 0.
+  );
+  // workDoc.close(SaveOptions.DONOTSAVECHANGES);
 
   return;
 };
@@ -19,6 +28,7 @@ const progressWin = (endValue?: number): ProgressWindow => {
   endValue = endValue || 100;
   const win: ProgressWindow = new Window(`palette`);
   win.pbar = win.add(`progressbar`, undefined, 0, endValue);
+  win.pbar.preferredSize[0] = 300;
   return win;
 };
 
@@ -45,13 +55,13 @@ const beginWork = (startingFolder: Folder): void => {
   progressWindow.show();
   for (let index = 0; index < imageFiles.length; index++) {
     const image = imageFiles[index];
-    $.writeln(`Image fsName is ${image.fsName}`);
     if (progressWindow.pbar) {
       progressWindow.pbar.value = index + 1;
     }
     createHalfRetina(image);
-    return;
   }
+  progressWindow.close();
+  return;
 };
 
 (() => {
@@ -74,7 +84,9 @@ const beginWork = (startingFolder: Folder): void => {
   tInput.active = true;
 
   const gButtons: Group = wInput.add(`group`);
-  const bOK: Button = gButtons.add(`button`, undefined, `Begin`, {name: `ok`});
+  const bOK: Button = gButtons.add(`button`, undefined, `Begin`, {
+    name: `ok`,
+  });
   // eslint-disable-next-line no-unused-vars
   const bCancel: Button = gButtons.add(`button`, undefined, `Cancel`);
 

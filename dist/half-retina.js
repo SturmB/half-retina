@@ -3,14 +3,14 @@ var createHalfRetina = function (imageFile) {
     var saveFile = new File(imageFile.fsName.replace("@3x", "@1.5x"));
     $.writeln("Save file is " + saveFile.fsName);
     var workDoc = app.open(imageFile);
-    $.writeln("workDoc is " + workDoc.name);
-    workDoc.close(SaveOptions.DONOTSAVECHANGES);
+    workDoc.resizeImage(workDoc.width.value / 2, workDoc.height.value / 2, workDoc.resolution, ResampleMethod.AUTOMATIC, 0);
     return;
 };
 var progressWin = function (endValue) {
     endValue = endValue || 100;
     var win = new Window("palette");
     win.pbar = win.add("progressbar", undefined, 0, endValue);
+    win.pbar.preferredSize[0] = 300;
     return win;
 };
 var getImages = function (startFolder, files) {
@@ -36,13 +36,13 @@ var beginWork = function (startingFolder) {
     progressWindow.show();
     for (var index = 0; index < imageFiles.length; index++) {
         var image = imageFiles[index];
-        $.writeln("Image fsName is " + image.fsName);
         if (progressWindow.pbar) {
             progressWindow.pbar.value = index + 1;
         }
         createHalfRetina(image);
-        return;
     }
+    progressWindow.close();
+    return;
 };
 (function () {
     var wInput = new Window("dialog", "Half-Retina");
@@ -56,7 +56,9 @@ var beginWork = function (startingFolder) {
     tInput.characters = 20;
     tInput.active = true;
     var gButtons = wInput.add("group");
-    var bOK = gButtons.add("button", undefined, "Begin", { name: "ok" });
+    var bOK = gButtons.add("button", undefined, "Begin", {
+        name: "ok"
+    });
     var bCancel = gButtons.add("button", undefined, "Cancel");
     bOK.enabled = false;
     var enbaleOK = function () {
