@@ -1,9 +1,15 @@
 "use strict";
 var createHalfRetina = function (imageFile) {
     var saveFile = new File(imageFile.fsName.replace("@3x", "@1.5x"));
-    $.writeln("Save file is " + saveFile.fsName);
+    var saveOptions = new JPEGSaveOptions();
+    saveOptions.embedColorProfile = false;
+    saveOptions.formatOptions = FormatOptions.STANDARDBASELINE;
+    saveOptions.matte = MatteType.WHITE;
+    saveOptions.quality = 12;
     var workDoc = app.open(imageFile);
     workDoc.resizeImage(workDoc.width.value / 2, workDoc.height.value / 2, workDoc.resolution, ResampleMethod.AUTOMATIC, 0);
+    workDoc.saveAs(saveFile, saveOptions);
+    workDoc.close(SaveOptions.DONOTSAVECHANGES);
     return;
 };
 var progressWin = function (endValue) {

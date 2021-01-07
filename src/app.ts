@@ -6,7 +6,12 @@ interface ProgressWindow extends Window {
 
 const createHalfRetina = (imageFile: File): void => {
   const saveFile: File = new File(imageFile.fsName.replace(`@3x`, `@1.5x`));
-  $.writeln(`Save file is ${saveFile.fsName}`);
+
+  const saveOptions: JPEGSaveOptions = new JPEGSaveOptions();
+  saveOptions.embedColorProfile = false;
+  saveOptions.formatOptions = FormatOptions.STANDARDBASELINE;
+  saveOptions.matte = MatteType.WHITE;
+  saveOptions.quality = 12;
 
   const workDoc: Document = app.open(imageFile);
 
@@ -19,7 +24,11 @@ const createHalfRetina = (imageFile: File): void => {
     ResampleMethod.AUTOMATIC,
     0 // Noise value should be 0.
   );
-  // workDoc.close(SaveOptions.DONOTSAVECHANGES);
+
+  workDoc.saveAs(saveFile, saveOptions);
+  workDoc.close(SaveOptions.DONOTSAVECHANGES);
+
+  // imageFile.remove();
 
   return;
 };
