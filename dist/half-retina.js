@@ -18,6 +18,11 @@ var progressWin = function (endValue) {
     var win = new Window("palette", "Progress");
     win.pbar = win.add("progressbar", undefined, 0, endValue);
     win.pbar.preferredSize[0] = 300;
+    var timeRemainGroup = win.add("group");
+    timeRemainGroup.orientation = "row";
+    timeRemainGroup.add("statictext", undefined, "Time remaining:");
+    win.timeRemain = timeRemainGroup.add("statictext");
+    win.timeRemain.preferredSize[0] = 300;
     return win;
 };
 var getImages = function (startFolder, files) {
@@ -37,8 +42,63 @@ var getImages = function (startFolder, files) {
     }
     return files;
 };
+var numberEnding = function (num) {
+    return num > 1 ? "s" : "";
+};
+var addSeparator = function (str) {
+    return str.length > 0 ? ", " : "";
+};
+var remainder = function (workingSeconds, timeFrame) {
+    return (workingSeconds %= timeFrame);
+};
+var timeToString = function (milliseconds) {
+    if (milliseconds === void 0) { milliseconds = 0; }
+    var returnStr = "";
+    var MILLISECONDS_IN_A_SECOND = 1000;
+    var SECONDS_IN_A_YEAR = 31536000;
+    var SECONDS_IN_A_DAY = 86400;
+    var SECONDS_IN_AN_HOUR = 3600;
+    var SECONDS_IN_A_MINUTE = 60;
+    var workingSeconds = Math.floor(milliseconds / MILLISECONDS_IN_A_SECOND);
+    var years = Math.floor(workingSeconds / SECONDS_IN_A_YEAR);
+    workingSeconds = remainder(workingSeconds, SECONDS_IN_A_YEAR);
+    var days = Math.floor(workingSeconds / SECONDS_IN_A_DAY);
+    workingSeconds = remainder(workingSeconds, SECONDS_IN_A_DAY);
+    var hours = Math.floor(workingSeconds / SECONDS_IN_AN_HOUR);
+    workingSeconds = remainder(workingSeconds, SECONDS_IN_AN_HOUR);
+    var minutes = Math.floor(workingSeconds / SECONDS_IN_A_MINUTE);
+    var seconds = remainder(workingSeconds, SECONDS_IN_A_MINUTE);
+    if (years) {
+        returnStr += years + " year" + numberEnding(years);
+    }
+    if (days) {
+        returnStr += "" + addSeparator(returnStr) + days + " day" + numberEnding(days);
+    }
+    if (hours) {
+        returnStr += "" + addSeparator(returnStr) + hours + " hour" + numberEnding(hours);
+    }
+    if (minutes) {
+        returnStr += "" + addSeparator(returnStr) + minutes + " minute" + numberEnding(minutes);
+    }
+    if (seconds) {
+        returnStr += "" + addSeparator(returnStr) + seconds + " second" + numberEnding(seconds);
+    }
+    if (returnStr) {
+        return returnStr;
+    }
+    return "less than a second";
+};
+var calculateTimeRemaining = function (startTime, completedTasks, totalTasks) {
+    var currentDate = new Date();
+    var elapsed = currentDate.getTime() - startTime.getTime();
+    var timePer = elapsed / completedTasks;
+    var tasksRemaining = totalTasks - completedTasks;
+    var millisecondsRemaining = tasksRemaining * timePer;
+    return millisecondsRemaining;
+};
 var beginWork = function (startingFolder) {
     var imageFiles = getImages(startingFolder);
+    var startTime = new Date();
     var progressWindow = progressWin(imageFiles.length);
     progressWindow.show();
     for (var index = 0; index < imageFiles.length; index++) {
@@ -47,6 +107,10 @@ var beginWork = function (startingFolder) {
             progressWindow.pbar.value = index + 1;
         }
         processImage(image);
+        var timeRemaining = calculateTimeRemaining(startTime, index + 1, imageFiles.length);
+        if (progressWindow.timeRemain) {
+            progressWindow.timeRemain.text = timeToString(timeRemaining);
+        }
     }
     progressWindow.close();
     return;
