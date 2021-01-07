@@ -1,9 +1,20 @@
 /// <reference types="types-for-adobe/Photoshop/2015.5"/>
 
+/**
+ * Creates a custom version of the ScriptUI object "Window" to allow for
+ * a Progressbar.
+ */
 interface ProgressWindow extends Window {
   pbar?: Progressbar;
 }
 
+/**
+ * Opens an image file in Photoshop, scales it down to 1/2 of its
+ * original size, then saves it with the "@1.5x" text, closes it,
+ * and finally deletes the original.
+ *
+ * @param {File} imageFile The image file upon which resizing will be performed
+ */
 const processImage = (imageFile: File): void => {
   const saveFile: File = new File(imageFile.fsName.replace(`@3x`, `@1.5x`));
 
@@ -33,6 +44,11 @@ const processImage = (imageFile: File): void => {
   return;
 };
 
+/**
+ * Generates a progress bar window (palette, actually).
+ *
+ * @param {number} endValue The maximum number that the bar represents
+ */
 const progressWin = (endValue?: number): ProgressWindow => {
   endValue = endValue || 100;
   const win: ProgressWindow = new Window(`palette`, `Progress`);
@@ -41,6 +57,13 @@ const progressWin = (endValue?: number): ProgressWindow => {
   return win;
 };
 
+/**
+ * Crawls through all subfolders of the given folder and returns an array
+ * of all jpg or png files with "@3x" in the name.
+ *
+ * @param {Folder} startFolder The folder in which to begin looking for files
+ * @param {Array} files An array of all relevant files found
+ */
 const getImages = (startFolder: Folder, files?: File[]): File[] => {
   const reRetina3: RegExp = new RegExp(`@3x.(jp|pn)g`, `i`);
   files = files || [];
@@ -57,6 +80,13 @@ const getImages = (startFolder: Folder, files?: File[]): File[] => {
   return files;
 };
 
+/**
+ * Wrapper that executes everything: Gets all the images in the given folder,
+ * creates and displays a progress bar window, etc. It them updates that window
+ * with every image file processed as it processes them.
+ *
+ * @param {Folder} startingFolder The folder in which all work will be done
+ */
 const beginWork = (startingFolder: Folder): void => {
   // Get the list of all "@3x" images
   const imageFiles: File[] = getImages(startingFolder);
@@ -73,6 +103,12 @@ const beginWork = (startingFolder: Folder): void => {
   return;
 };
 
+/**
+ * The IIFE that begins everything.
+ * It generates a dialog window to ask for the folder in which all work
+ * will be performed, then calls the wrapper function that performs
+ * said work.
+ */
 (() => {
   // Build ScriptUI window
   const wInput: Window = new Window(`dialog`, `Half-Retina`);
