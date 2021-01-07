@@ -1,4 +1,10 @@
 "use strict";
+var progressWin = function (endValue) {
+    endValue = endValue || 100;
+    var win = new Window("palette");
+    win.pbar = win.add("progressbar", undefined, 0, endValue);
+    return win;
+};
 var getImages = function (startFolder, files) {
     var reRetina3 = new RegExp("@3x.(jp|pn)g", "i");
     files = files || [];
@@ -18,7 +24,13 @@ var getImages = function (startFolder, files) {
 };
 var beginWork = function (startingFolder) {
     var imageFiles = getImages(startingFolder);
-    $.writeln(imageFiles.toString());
+    var progressWindow = progressWin(imageFiles.length);
+    progressWindow.show();
+    for (var index = 0; index < imageFiles.length; index++) {
+        var image = imageFiles[index];
+        $.writeln(image.fsName);
+        progressWindow.pbar.value = index + 1;
+    }
 };
 (function () {
     var wInput = new Window("dialog", "Half-Retina");

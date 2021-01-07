@@ -1,5 +1,16 @@
 /// <reference types="types-for-adobe/Photoshop/2015.5"/>
 
+interface ProgressWindow extends Window {
+  pbar?: Progressbar,
+}
+
+const progressWin = (endValue?: number): ProgressWindow => {
+  endValue = endValue || 100;
+  const win: ProgressWindow = new Window(`palette`);
+  win.pbar = win.add(`progressbar`, undefined, 0, endValue);
+  return win;
+};
+
 const getImages = (startFolder: Folder, files?: File[]): File[] => {
   const reRetina3: RegExp = new RegExp(`@3x.(jp|pn)g`, `i`);
   files = files || [];
@@ -19,7 +30,15 @@ const getImages = (startFolder: Folder, files?: File[]): File[] => {
 const beginWork = (startingFolder: Folder): void => {
   // Get the list of all "@3x" images
   const imageFiles: File[] = getImages(startingFolder);
-  $.writeln(imageFiles.toString());
+  const progressWindow: ProgressWindow = progressWin(imageFiles.length);
+  progressWindow.show();
+  for (let index = 0; index < imageFiles.length; index++) {
+    const image = imageFiles[index];
+    $.writeln(image.fsName);
+    if (progressWindow.pbar) {
+      progressWindow.pbar.value = index + 1;
+    }
+  }
 };
 
 (() => {
